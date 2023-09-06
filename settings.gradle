@@ -1,0 +1,17 @@
+import org.gradle.api.initialization.resolve.RepositoriesMode
+
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_PROJECT)
+    repositories {
+        google()
+        mavenCentral()
+        google()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+        mavenCentral()
+    }
+}
+
+//rootProject.name = "uploadapkplugin"
+include ':app'

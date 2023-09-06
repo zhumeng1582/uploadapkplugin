@@ -1,0 +1,57 @@
+plugins {
+    id 'groovy'
+    id 'maven-publish'
+    id 'java-gradle-plugin'
+}
+
+
+task comps {
+    afterEvaluate {
+        println("Components: " + components*.name)
+    }
+}
+// Because the components are created only during the afterEvaluate phase, you must
+// configure your publications using the afterEvaluate() lifecycle method.
+afterEvaluate {
+publishing{
+
+    publications {
+        release(MavenPublication) {
+            groupId = 'center.uploadpgy.plugin'
+            artifactId = 'UploadApkPlugin'
+            version = '1.0.0'
+            from components.java
+
+
+        }
+    }
+    repositories {
+        maven {
+//            url = "$rootDir/repo"
+            url = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+}
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+
+    // gradle sdk
+    implementation gradleApi()
+    // groovy sdk
+    implementation localGroovy()
+
+    implementation "com.android.tools.build:gradle:4.1.2"
+    implementation 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+    implementation "com.google.code.gson:gson:2.8.8"
+    implementation "com.squareup.okhttp3:okhttp:3.12.12"
+}
