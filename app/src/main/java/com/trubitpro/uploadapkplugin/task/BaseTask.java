@@ -9,6 +9,8 @@ import com.trubitpro.uploadapkplugin.entry.LarkResult;
 import com.trubitpro.uploadapkplugin.entry.PgyCOSTokenResult;
 import com.trubitpro.uploadapkplugin.help.CmdHelper;
 import com.trubitpro.uploadapkplugin.help.HttpHelper;
+import com.trubitpro.uploadapkplugin.help.ProgressListener;
+import com.trubitpro.uploadapkplugin.help.ProgressRequestBody;
 import com.trubitpro.uploadapkplugin.help.SendMsgHelper;
 
 
@@ -60,9 +62,21 @@ public class BaseTask extends DefaultTask {
         } catch (UnsupportedEncodingException e1) {
             //TODO
         }
+        final int[] progressInit = {0};
+        ProgressRequestBody progressRequestBody=new ProgressRequestBody(fileBody, new ProgressListener() {
+            @Override
+            public void onProgress(long currentBytes, long totalBytes) {
+                int progress = (int) (currentBytes * 100 / totalBytes);
+                if (progress==100||progress- progressInit[0] >8){
+                    progressInit[0] =progress;
+                    System.out.println("上传APK进度-------"+progress+"%------------");
+
+                }
+            }
+        });
         MultipartBody mBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file" , name , fileBody)
+                .addFormDataPart("file" , name , progressRequestBody)
                 .build();
         Request request = new Request.Builder()
                 .url("https://test-api.trubit.com/member-api/api/v1/uploadApp")

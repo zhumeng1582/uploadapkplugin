@@ -59,7 +59,7 @@ public class UploadApkPlugin   implements Plugin<Project> {
         uploadTask.init( isInit?applicationVariant:null, project1);
         //依赖关系 。上传依赖打包，打包依赖clean。
        if (isInit){
-           applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
+//           applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
            uploadTask.dependsOn(applicationVariant.getAssembleProvider().get());
        }
     }
