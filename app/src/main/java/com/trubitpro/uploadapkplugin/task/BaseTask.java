@@ -82,8 +82,6 @@ public class BaseTask extends DefaultTask {
                 .url("https://test-api.trubit.com/member-api/api/v1/uploadApp")
                 .post(mBody)
                 .build();
-
-
         try {
             Response response = HttpHelper.getOkHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
@@ -99,7 +97,11 @@ public class BaseTask extends DefaultTask {
                         String apkDownUrl = larkResult.getData();
                         System.out.println("上传成功，应用链接: " + apkDownUrl);
                         String gitLog = CmdHelper.checkGetGitParamsWithLog(mTargetProject);
-                        SendMsgHelper.sendMsgToLark(mVariant, mTargetProject, larkResult.getData(), gitLog);
+                        String gitBranch = CmdHelper.exeCmd( "git symbolic-ref --short HEAD",false);
+                        System.out.println("TrubitPro --- gitBranch====="+gitBranch);
+
+
+                        SendMsgHelper.sendMsgToLark(mVariant, mTargetProject, larkResult.getData(), gitLog,gitBranch);
                     } else {
                         System.out.println("TrubitPro --- buildInfo: upload pgy result error : data is empty");
                     }

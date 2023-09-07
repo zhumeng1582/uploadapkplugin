@@ -15,11 +15,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public final class SendMsgHelper {
-    public static void sendMsgToLark(BaseVariant variant, Project project, String dataDTO, String gitLog) {
+    public static void sendMsgToLark(BaseVariant variant, Project project, String dataDTO, String gitLog,String gitBranch) {
         String defaultTitle = "测试包";
         String defaultText = "最新开发测试包已上传 ";
         String defaultClickText = "点我进行下载";
-        String defaultLogTitle = "最近Git更新内容：\n ";
+        String defaultLogTitle = "分支最近更新内容：\n ";
         SendLarkParams feishuParams = SendLarkParams.getLarkParamsConfig(project);
         String webHookHostUrl = feishuParams.webHookHostUrl;
         if (  isEmpty(webHookHostUrl)) {
@@ -144,7 +144,7 @@ public final class SendMsgHelper {
                 List<  LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean> contentGitLogBeans = new ArrayList<>();
                   LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean contentGitLogBeanText = new   LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean();
                 contentGitLogBeanText.setTag("text");
-                contentGitLogBeanText.setText("** " + defaultLogTitle + gitLog);
+                contentGitLogBeanText.setText("** Git-"+gitBranch+ defaultLogTitle + gitLog);
                 contentGitLogBeans.add(contentGitLogBeanText);
                 zhCnContentList.add(contentGitLogBeans);
             }

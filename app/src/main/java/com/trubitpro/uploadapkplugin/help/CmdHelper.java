@@ -44,7 +44,7 @@ public class CmdHelper {
         }
         logBuilder.append(" --max-count=").append(logMaxCount);
         System.out.println("获取Git log 外部命令：\n" + logBuilder.toString());
-        return exeCmd(logBuilder.toString());
+        return exeCmd(logBuilder.toString(),true);
     }
 
 
@@ -121,7 +121,7 @@ public class CmdHelper {
         }
     }
 
-    public static String exeCmd(String commandStr) {
+    public static String exeCmd(String commandStr,boolean isFor) {
         BufferedReader bufferedReader = null;
         Process p = null;
         try {
@@ -131,10 +131,15 @@ public class CmdHelper {
             bufferedReader = new BufferedReader(new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8));
             StringBuilder stringBuilder = new StringBuilder();
             String line;
-            int count = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-                ++count;
-                stringBuilder.append(count).append(". ").append(line).append("\n ");
+            if (isFor) {
+                int count = 0;
+                while ((line = bufferedReader.readLine()) != null) {
+                    ++count;
+                    stringBuilder.append(count).append(". ").append(line).append("\n ");
+                }
+            }else{
+                line = bufferedReader.readLine();
+                stringBuilder. append(line).append("\n ");
             }
             System.out.println("ExeCmd result：\n" + stringBuilder);
             return stringBuilder.toString();
