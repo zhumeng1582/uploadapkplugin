@@ -26,7 +26,7 @@ public class BuildFlutterTask {
         List<String> commend = new ArrayList<>();
         commend.add("bash");
         commend.add("-c");
-        commend.add("cd ../mexo_flutter_module && pwd && flutter clean && flutter pub get ");
+        commend.add("cd ../mexo_flutter_module && pwd && flutter clean && flutter pub get && flutter build aar");
         try {
            ProcessUtils.exec(commend);
         } catch (Exception e) {
