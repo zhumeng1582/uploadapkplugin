@@ -12,6 +12,6 @@ public class PluginConstants {
     
     public static final String ANDROID_EXTENSION_NAME = "android";
     public static final String TASK_EXTENSION_NAME = "ApkBuildUploadPlatform";
-    public static final String TASK_EXTENSION_NAME_ONLY_UPLOAD = "OnlyUploadApkToPlatform";
+    public static final String TASK_BUILD_FLUTTER_EXTENSION_NAME = "buildFlutterParams";
 
 }

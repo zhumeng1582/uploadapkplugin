@@ -69,11 +69,13 @@ public class BaseTask extends DefaultTask {
                 int progress = (int) (currentBytes * 100 / totalBytes);
                 if (progress==100||progress- progressInit[0] >8){
                     progressInit[0] =progress;
-                    System.out.println("上传APK进度-------"+progress+"%------------");
+                    System.out.println("\n 上传APK进度-------"+progress+"%------------");
 
                 }
             }
         });
+
+
         MultipartBody mBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file" , name , progressRequestBody)
@@ -82,37 +84,39 @@ public class BaseTask extends DefaultTask {
                 .url("https://test-api.trubit.com/member-api/api/v1/uploadApp")
                 .post(mBody)
                 .build();
+        System.out.println("\n******************* TrubitPro 上传: Start *******************");
+
         try {
             Response response = HttpHelper.getOkHttpClient().newCall(request).execute();
             if (response.isSuccessful()) {
+                System.out.println("\n******************* TrubitPro 上传: finish *******************");
+
                 String result = response.body().string();
-                System.out.println("TrubitPro   ---   result: " + result);
+                System.out.println("\n TrubitPro  =======   result: " + result);
                 if (!result.isEmpty()) {
                     LarkResult larkResult = new Gson().fromJson(result, LarkResult.class);
                     if (larkResult.getCode() != 0 ) {
-                        System.out.println("TrubitPro  --- upload error : " + larkResult.getMsg());
+                        System.out.println("\n TrubitPro=======upload error : " + larkResult.getMsg());
                         return;
                     }
                     if (larkResult.getData() != null) {
                         String apkDownUrl = larkResult.getData();
-                        System.out.println("上传成功，应用链接: " + apkDownUrl);
+                        System.out.println("\n 上传成功，应用链接: " + apkDownUrl);
                         String gitLog = CmdHelper.checkGetGitParamsWithLog(mTargetProject);
+                        System.out.println("\n Git log 日志列表：\n" + gitLog);
                         String gitBranch = CmdHelper.exeCmd( "git symbolic-ref --short HEAD",false);
-                        System.out.println("TrubitPro --- gitBranch====="+gitBranch);
-
-
+                        System.out.println("\n TrubitPro=========当前git=Branch====="+gitBranch);
                         SendMsgHelper.sendMsgToLark(mVariant, mTargetProject, larkResult.getData(), gitLog,gitBranch);
                     } else {
-                        System.out.println("TrubitPro --- buildInfo: upload pgy result error : data is empty");
+                        System.out.println("\n  TrubitPro=========buildInfo: upload pgy result error : data is empty");
                     }
                 }
             } else {
                 System.out.println(response.toString());
-                System.out.println("TrubitPro ---- request 上传 call failed");
+                System.out.println("TrubitPro ======= request 上传 call failed");
             }
-            System.out.println("******************* TrubitPro: finish *******************");
         } catch (Exception e) {
-            System.out.println("TrubitPro ---- request  上传 call failed " + e);
+            System.out.println("TrubitPro  ======= request  上传 call failed " + e);
         }
     }
 

@@ -19,7 +19,7 @@ public final class SendMsgHelper {
         String defaultTitle = "测试包";
         String defaultText = "最新开发测试包已上传 ";
         String defaultClickText = "点我进行下载";
-        String defaultLogTitle = "分支最近更新内容：\n ";
+        String defaultLogTitle = "Git最近更新内容：\n ";
         SendLarkParams feishuParams = SendLarkParams.getLarkParamsConfig(project);
         String webHookHostUrl = feishuParams.webHookHostUrl;
         if (  isEmpty(webHookHostUrl)) {
@@ -36,7 +36,7 @@ public final class SendMsgHelper {
         if (  isEmpty(text)) {
             text = defaultText;
         }
-        StringBuilder textStr = new StringBuilder("**").append(title).append( "\n").append(text).append("** ").append(dataDTO).append(" \n");
+        StringBuilder textStr = new StringBuilder("** ").append(title).append( "\n").append(text).append("** ").append(dataDTO).append(" \n");
        LarkRequestBean  larkRequestBean = new LarkRequestBean();
         if ("interactive".equals(feishuParams.msgtype)) {
             LarkRequestBean.CardDTO cardDTO = new LarkRequestBean.CardDTO();
@@ -82,7 +82,7 @@ public final class SendMsgHelper {
                 elements3.setTag("div");
                 TextDTO elements3TextBean = new TextDTO();
                 elements3TextBean.setTag("lark_md");
-                StringBuilder logStrBuilder = new StringBuilder("**").append(defaultLogTitle).append("**").append(gitLog);
+                StringBuilder logStrBuilder = new StringBuilder("**").append("Current Branch：").append(gitBranch).append("**").append(defaultLogTitle).append("**").append(gitLog);
                 elements3TextBean.setContent(logStrBuilder.toString());
                 elements3.setText(elements3TextBean);
                 elementsDTOList.add(elements3);
@@ -144,7 +144,8 @@ public final class SendMsgHelper {
                 List<  LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean> contentGitLogBeans = new ArrayList<>();
                   LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean contentGitLogBeanText = new   LarkRequestBean.ContentDTO.PostDTO.ZhCnDTO.ContentBean();
                 contentGitLogBeanText.setTag("text");
-                contentGitLogBeanText.setText("** Git-"+gitBranch+ defaultLogTitle + gitLog);
+                StringBuilder logStrBuilder = new StringBuilder("**").append("Current Branch：").append(gitBranch).append("**").append(defaultLogTitle).append("**").append(gitLog);
+                contentGitLogBeanText.setText(logStrBuilder.toString());
                 contentGitLogBeans.add(contentGitLogBeanText);
                 zhCnContentList.add(contentGitLogBeans);
             }
@@ -166,7 +167,9 @@ public final class SendMsgHelper {
          * interactive	消息卡片	消息卡片消息
          */
         String json = JsonOutput.toJson(larkRequestBean);
-        System.out.println("send to   lark request json：" + json);
+        System.out.println("\n*************** sendMsgToLark Start ***************");
+
+        System.out.println("\nsend to lark request json：\n" + json);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json;charset=UTF-8"), json);
         Request request = new Request.Builder()
                 .addHeader("Connection", "Keep-Alive")
@@ -178,13 +181,13 @@ public final class SendMsgHelper {
             Response response = HttpHelper.getOkHttpClient().newCall(request).execute();
             if (response.isSuccessful() && response.body() != null) {
                 String result = response.body().string();
-                System.out.println("send to   lark result：" + result);
+                System.out.println("\nsend to  lark result：" + result);
             } else {
-                System.out.println("send to   lark failure");
+                System.out.println("\nsend to  lark failure");
             }
-            System.out.println("*************** sendMsgToLark finish ***************");
+            System.out.println("\n*************** sendMsgToLark finish ***************");
         } catch (Exception e) {
-            System.out.println("send to   lark failure " + e);
+            System.out.println("\nsend to   lark failure " + e);
         }
     }
 

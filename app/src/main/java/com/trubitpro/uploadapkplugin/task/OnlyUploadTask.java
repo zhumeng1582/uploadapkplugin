@@ -2,6 +2,8 @@ package com.trubitpro.uploadapkplugin.task;
 
 
 import com.android.build.gradle.api.BaseVariantOutput;
+import com.trubitpro.uploadapkplugin.help.ProcessUtils;
+import com.trubitpro.uploadapkplugin.help.SystemLogUitls;
 import com.trubitpro.uploadapkplugin.pramars.UploadPgyParams;
 
 
@@ -9,6 +11,8 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -18,9 +22,9 @@ import java.util.Objects;
 public class OnlyUploadTask extends BaseTask {
 
     @TaskAction
-    public void uploadToPGY() {
-
+    public void uploadToServer() {
         for (BaseVariantOutput output : mVariant.getOutputs()) {
+            System.out.println(" ======当前执行的渠道和版本========" + output.getName() );
             File apkDir = output.getOutputFile();
             if (apkDir == null || !apkDir.exists()) {
                 throw new GradleException("The compiled APK file to upload does not exist!");
@@ -43,9 +47,11 @@ public class OnlyUploadTask extends BaseTask {
             if (apk == null || !apk.exists()) {
                 throw new GradleException("The compiled APK file to upload does not exist!");
             }
+
             System.out.println("Final upload apk path: " + apk.getAbsolutePath());
             uploadPgyQuickWay( apk);
         }
 
     }
+
 }
