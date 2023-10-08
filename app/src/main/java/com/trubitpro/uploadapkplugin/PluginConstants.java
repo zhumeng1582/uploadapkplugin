@@ -6,7 +6,7 @@ public class PluginConstants {
     public static final  String TASK_DES="tools of upload to third platform";
 
     public static final String UPLOAD_PARAMS_NAME = "buildLarkParams";
-    public static final String DING_PARAMS_NAME = "buildDingParams";
+    public static final String TRUBIT_PRO_PARAMS_NAME = "buildTrubitProParams";
     public static final String WEIXIN_GROUP_PARAMS_NAME = "buildWeixinGroupParams";
     public static final String GIT_LOG_PARAMS_NAME = "buildGitLogParams";
     

@@ -2,9 +2,6 @@ package com.trubitpro.uploadapkplugin.task;
 
 
 import com.android.build.gradle.api.BaseVariantOutput;
-import com.trubitpro.uploadapkplugin.help.ProcessUtils;
-import com.trubitpro.uploadapkplugin.help.SystemLogUitls;
-import com.trubitpro.uploadapkplugin.pramars.UploadPgyParams;
 
 
 import org.gradle.api.GradleException;
@@ -47,7 +44,6 @@ public class OnlyUploadTask extends BaseTask {
             if (apk == null || !apk.exists()) {
                 throw new GradleException("The compiled APK file to upload does not exist!");
             }
-
             System.out.println("Final upload apk path: " + apk.getAbsolutePath());
             uploadPgyQuickWay( apk);
         }

@@ -2,10 +2,13 @@ package com.trubitpro.uploadapkplugin.task;
 
 
 import com.android.build.gradle.api.BaseVariantOutput;
+import com.trubitpro.uploadapkplugin.entry.FlutterGitBean;
+import com.trubitpro.uploadapkplugin.help.CmdHelper;
 import com.trubitpro.uploadapkplugin.help.ProcessUtils;
 import com.trubitpro.uploadapkplugin.help.SystemLogUitls;
 
 import org.gradle.api.GradleException;
+import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
@@ -28,7 +31,7 @@ public class BuildFlutterTask {
         commend.add("-c");
         commend.add("cd ../mexo_flutter_module && pwd && flutter clean && flutter pub get && flutter build aar");
         try {
-           ProcessUtils.exec(commend);
+            ProcessUtils.exec(commend);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

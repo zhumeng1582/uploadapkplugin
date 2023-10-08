@@ -3,8 +3,10 @@ package com.trubitpro.uploadapkplugin;
 import com.android.build.gradle.AppExtension;
 import com.android.build.gradle.api.ApplicationVariant;
 import com.google.gson.Gson;
+import com.trubitpro.uploadapkplugin.entry.FlutterGitBean;
 import com.trubitpro.uploadapkplugin.pramars.GitLogParams;
 import com.trubitpro.uploadapkplugin.pramars.SendLarkParams;
+import com.trubitpro.uploadapkplugin.pramars.TrubitProParams;
 import com.trubitpro.uploadapkplugin.task.BuildFlutterTask;
 import com.trubitpro.uploadapkplugin.task.OnlyUploadTask;
 
@@ -16,6 +18,7 @@ public class UploadApkPlugin   implements Plugin<Project> {
     int process = 0;
     @Override
     public void apply(Project target) {
+        target.getExtensions().create(PluginConstants.TRUBIT_PRO_PARAMS_NAME, TrubitProParams.class);
         target.getExtensions().create(PluginConstants.GIT_LOG_PARAMS_NAME, GitLogParams.class);
         target.getExtensions().create(PluginConstants.UPLOAD_PARAMS_NAME, SendLarkParams.class);
         target.afterEvaluate(project1 -> {

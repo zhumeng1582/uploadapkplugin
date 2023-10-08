@@ -5,13 +5,17 @@ package com.trubitpro.uploadapkplugin.task;
 import com.android.build.gradle.api.BaseVariant;
 import com.google.gson.Gson;
 import com.trubitpro.uploadapkplugin.PluginConstants;
+import com.trubitpro.uploadapkplugin.entry.FlutterGitBean;
 import com.trubitpro.uploadapkplugin.entry.LarkResult;
-import com.trubitpro.uploadapkplugin.entry.PgyCOSTokenResult;
 import com.trubitpro.uploadapkplugin.help.CmdHelper;
 import com.trubitpro.uploadapkplugin.help.HttpHelper;
+import com.trubitpro.uploadapkplugin.help.ProcessUtils;
 import com.trubitpro.uploadapkplugin.help.ProgressListener;
 import com.trubitpro.uploadapkplugin.help.ProgressRequestBody;
 import com.trubitpro.uploadapkplugin.help.SendMsgHelper;
+import com.trubitpro.uploadapkplugin.pramars.GitLogParams;
+import com.trubitpro.uploadapkplugin.pramars.SendLarkParams;
+import com.trubitpro.uploadapkplugin.pramars.TrubitProParams;
 
 
 import org.gradle.api.DefaultTask;
@@ -20,11 +24,9 @@ import org.gradle.api.Project;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-import okhttp3.FormBody;
-import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
@@ -40,6 +42,10 @@ public class BaseTask extends DefaultTask {
     protected BaseVariant mVariant;
     protected Project mTargetProject;
 
+
+    public FlutterGitBean flutterGit;
+
+
     public void init(BaseVariant variant, Project project) {
         this.mVariant = variant;
         this.mTargetProject = project;
@@ -49,7 +55,7 @@ public class BaseTask extends DefaultTask {
 
 
     /**
-     * 快速上传方式 获取上传的 token
+     * 上传apk 到自己服务器地址
      * @param apkFile
      */
     public void uploadPgyQuickWay(File apkFile) {
@@ -75,13 +81,22 @@ public class BaseTask extends DefaultTask {
             }
         });
 
+        TrubitProParams trubitProParams = TrubitProParams.getTrubitProParamsConfig(mTargetProject);
+        String url="https://test-api.trubit.com/member-api/api/v1/uploadApp";
+        String fileKey="file";
 
+        if (!trubitProParams.getHttpUpLoadUrl().isEmpty()){
+            url=trubitProParams.getHttpUpLoadUrl();
+        }
+        if (!trubitProParams.getUpLoadKey().isEmpty()){
+            fileKey=trubitProParams.getUpLoadKey();
+        }
         MultipartBody mBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("file" , name , progressRequestBody)
+                .addFormDataPart(fileKey , name , progressRequestBody)
                 .build();
         Request request = new Request.Builder()
-                .url("https://test-api.trubit.com/member-api/api/v1/uploadApp")
+                .url(url)
                 .post(mBody)
                 .build();
         System.out.println("\n******************* TrubitPro 上传: Start *******************");
@@ -101,12 +116,39 @@ public class BaseTask extends DefaultTask {
                     }
                     if (larkResult.getData() != null) {
                         String apkDownUrl = larkResult.getData();
+                        flutterGit=new FlutterGitBean("","");
                         System.out.println("\n 上传成功，应用链接: " + apkDownUrl);
                         String gitLog = CmdHelper.checkGetGitParamsWithLog(mTargetProject);
-                        System.out.println("\n Git log 日志列表：\n" + gitLog);
                         String gitBranch = CmdHelper.exeCmd( "git symbolic-ref --short HEAD",false);
-                        System.out.println("\n TrubitPro=========当前git=Branch====="+gitBranch);
-                        SendMsgHelper.sendMsgToLark(mVariant, mTargetProject, larkResult.getData(), gitLog,gitBranch);
+                        System.out.println("\n Android Project Git branch    ：\n" + gitBranch);
+                        System.out.println("\n Android Project Git log 日志列表：\n" + gitLog);
+                        SendLarkParams larkParams = SendLarkParams.getLarkParamsConfig(mTargetProject);
+                        GitLogParams gitLogParams = GitLogParams.getGitParamsConfig(mTargetProject);
+
+                        List<String> commend2 = new ArrayList<>();
+                        commend2.add("bash");
+                        commend2.add("-c");
+                        commend2.add("cd ../mexo_flutter_module && git symbolic-ref --short HEAD");
+                        List<String> commend3 = new ArrayList<>();
+                        commend3.add("bash");
+                        commend3.add("-c");
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("cd ../mexo_flutter_module && git log --oneline --pretty=format:\"%an—>%s\" --no-merges --since=")
+                                .append(gitLogParams.gitLogHistoryDayTime).append("days --max-count=").append(gitLogParams.gitLogMaxCount);
+                        commend3.add(sb.toString());
+                        try {
+                            String flutterBranch  = ProcessUtils.exeCmd(commend2);
+                            String flutterLog  = ProcessUtils.exeCmd(commend3);
+                            flutterGit.setFlutterGitLog(flutterLog);
+                            flutterGit.setFlutterGitBranch(flutterBranch);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                        if (larkParams.isBuildFlutter){
+                            System.out.println("\n Flutter Project  Git branch    ：\n" + flutterGit.getFlutterGitBranch());
+                            System.out.println("\n Flutter Project  Git log 日志列表：\n" + flutterGit.getFlutterGitLog());
+                        }
+                        SendMsgHelper.sendMsgToLark(mVariant, mTargetProject, larkResult.getData(), gitLog,gitBranch,flutterGit);
                     } else {
                         System.out.println("\n  TrubitPro=========buildInfo: upload pgy result error : data is empty");
                     }
