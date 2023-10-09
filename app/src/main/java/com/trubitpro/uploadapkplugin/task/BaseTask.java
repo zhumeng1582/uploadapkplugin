@@ -128,12 +128,12 @@ public class BaseTask extends DefaultTask {
                         List<String> commend2 = new ArrayList<>();
                         commend2.add("bash");
                         commend2.add("-c");
-                        commend2.add("cd ../../mexo_flutter_module && git symbolic-ref --short HEAD");
+                        commend2.add("cd ../mexo_flutter_module && git symbolic-ref --short HEAD");
                         List<String> commend3 = new ArrayList<>();
                         commend3.add("bash");
                         commend3.add("-c");
                         StringBuilder sb = new StringBuilder();
-                        sb.append("cd ../../mexo_flutter_module && git log --oneline --pretty=format:\"%an—>%s\" --no-merges --since=")
+                        sb.append("cd ../mexo_flutter_module && git log --oneline --pretty=format:\"%an—>%s\" --no-merges --since=")
                                 .append(gitLogParams.gitLogHistoryDayTime).append("days --max-count=").append(gitLogParams.gitLogMaxCount);
                         commend3.add(sb.toString());
                         try {
