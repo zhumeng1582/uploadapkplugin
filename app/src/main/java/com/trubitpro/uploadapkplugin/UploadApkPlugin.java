@@ -23,6 +23,9 @@ public class UploadApkPlugin   implements Plugin<Project> {
         target.getExtensions().create(PluginConstants.UPLOAD_PARAMS_NAME, SendLarkParams.class);
         target.afterEvaluate(project1 -> {
             SendLarkParams sendLarkParams =  target.getExtensions().getByType(SendLarkParams.class);
+            TrubitProParams trubitProParams =  target.getExtensions().getByType(TrubitProParams.class);
+
+
             AppExtension appExtension = ((AppExtension) project1.getExtensions().findByName(PluginConstants.ANDROID_EXTENSION_NAME));
             if (appExtension == null) {
                 return;
@@ -33,7 +36,7 @@ public class UploadApkPlugin   implements Plugin<Project> {
             DomainObjectSet<ApplicationVariant> appVariants = appExtension.getApplicationVariants();
             for (ApplicationVariant applicationVariant : appVariants) {
                 if (applicationVariant.getBuildType() != null) {
-                    dependsOnTask(applicationVariant,  true, project1);
+                    dependsOnTask(applicationVariant,  true, project1,trubitProParams.getGetHttpUpLoadUrl());
                 }
             }
         });
@@ -41,7 +44,7 @@ public class UploadApkPlugin   implements Plugin<Project> {
     }
 
 
-    private void dependsOnTask(ApplicationVariant applicationVariant, boolean  isInit, Project project1) {
+    private void dependsOnTask(ApplicationVariant applicationVariant, boolean  isInit, Project project1,String url) {
         String variantName =
                 applicationVariant.getName().substring(0, 1).toUpperCase() + applicationVariant.getName().substring(1);
         if (variantName.isEmpty()) {
@@ -49,7 +52,7 @@ public class UploadApkPlugin   implements Plugin<Project> {
         }
         OnlyUploadTask uploadTask = project1.getTasks()
                 .create(PluginConstants.TASK_EXTENSION_NAME + variantName, OnlyUploadTask.class);
-        uploadTask.init( isInit?applicationVariant:null, project1);
+        uploadTask.init(isInit?applicationVariant:null, project1,url);
        if (isInit){
            applicationVariant.getAssembleProvider().get().dependsOn(project1.getTasks().findByName("clean"));
             uploadTask.dependsOn(applicationVariant.getAssembleProvider().get());

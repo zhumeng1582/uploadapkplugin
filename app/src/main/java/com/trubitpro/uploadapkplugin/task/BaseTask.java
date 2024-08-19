@@ -45,11 +45,22 @@ public class BaseTask extends DefaultTask {
 
     public FlutterGitBean flutterGit;
 
+    public  String getHttpUpLoadUrl="";
 
-    public void init(BaseVariant variant, Project project) {
+
+    public String getGetHttpUpLoadUrl() {
+        return getHttpUpLoadUrl;
+    }
+
+    public void setGetHttpUpLoadUrl(String getHttpUpLoadUrl) {
+        this.getHttpUpLoadUrl = getHttpUpLoadUrl;
+    }
+
+    public void init(BaseVariant variant, Project project,String url) {
         this.mVariant = variant;
         this.mTargetProject = project;
         setDescription(PluginConstants.TASK_DES);
+        setGetHttpUpLoadUrl(url);
         setGroup(PluginConstants.TASK_GROUP_NAME);
     }
 
@@ -82,7 +93,7 @@ public class BaseTask extends DefaultTask {
         });
 
         TrubitProParams trubitProParams = TrubitProParams.getTrubitProParamsConfig(mTargetProject);
-        String url="https://test-api.trubit.com/member-api/api/v1/uploadApp";
+        String url=getHttpUpLoadUrl();
         String fileKey="file";
 
         if (!trubitProParams.getHttpUpLoadUrl().isEmpty()){

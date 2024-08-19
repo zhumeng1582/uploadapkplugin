@@ -14,7 +14,7 @@ gitLogMaxCount = 20
 
 buildTrubitProParams {
 //上传服务器的接口地址 方便更改
-httpUpLoadUrl = "https://test-api.trubit.com/member-api/api/v1/uploadApp"
+httpUpLoadUrl = ""
 //上传文件的key 默认大部分都是file
 upLoadKey = "file"
 }
